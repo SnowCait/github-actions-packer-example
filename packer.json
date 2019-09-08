@@ -1,0 +1,40 @@
+{
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "region": "ap-northeast-1",
+            "source_ami_filter": {
+                "filters": {
+                    "virtualization-type": "hvm",
+                    "name": "*ubuntu-xenial-16.04-amd64-server-*",
+                    "root-device-type": "ebs"
+                },
+                "owners": [
+                    "099720109477"
+                ],
+                "most_recent": true
+            },
+            "instance_type": "t2.micro",
+            "ssh_username": "ubuntu",
+            "ami_name": "Packer Test {{isotime | clean_ami_name}}",
+            "launch_block_device_mappings": [
+                {
+                    "delete_on_termination": true,
+                    "device_name": "/dev/sda1",
+                    "volume_size": 10,
+                    "volume_type": "gp2"
+                }
+            ]
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+                "sudo apt update",
+                "sudo apt install -y python-simplejson",
+                "sudo echo `date`' - packer provisioned this AMI' > /home/ubuntu/packer_provisioners"
+            ]
+        }
+    ]
+}
